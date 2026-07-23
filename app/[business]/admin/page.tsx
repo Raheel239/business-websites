@@ -16,11 +16,17 @@ export default async function AdminPage({ params }: { params: { business: string
   const business = getBusinessConfig(params.business)
   if (!business) redirect('/')
 
-  const bookings = await prisma.booking.findMany({
+  const rawBookings = await prisma.booking.findMany({
     where: { businessSlug: params.business },
     include: { user: { select: { name: true, email: true } } },
     orderBy: { date: 'asc' },
   })
+
+  const bookings = rawBookings.map((b) => ({
+    ...b,
+    createdAt: b.createdAt.toISOString(),
+    updatedAt: b.updatedAt.toISOString(),
+  }))
 
   const stats = {
     total: bookings.length,

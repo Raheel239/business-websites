@@ -13,13 +13,19 @@ export default async function AccountPage({ params }: { params: { business: stri
   const business = getBusinessConfig(params.business)
   if (!business) redirect('/')
 
-  const bookings = await prisma.booking.findMany({
+  const rawBookings = await prisma.booking.findMany({
     where: {
       userId: (session.user as any).id,
       businessSlug: params.business,
     },
     orderBy: { createdAt: 'desc' },
   })
+
+  const bookings = rawBookings.map((b) => ({
+    ...b,
+    createdAt: b.createdAt.toISOString(),
+    updatedAt: b.updatedAt.toISOString(),
+  }))
 
   return (
     <>
