@@ -34,7 +34,7 @@ export default function SignupPage({ params }: { params: { business: string } })
     if (res.ok) {
       await signIn('credentials', { email, password, redirect: false })
       toast.success('Account created! Welcome!')
-      router.push(`/${business.slug}`)
+      router.push(`/${business!.slug}`)
     } else {
       const { error } = await res.json()
       toast.error(error || 'Failed to create account')
